@@ -1,13 +1,13 @@
 variable "aws_source_ami" {
-  default = "amzn2-ami-hvm-2.0.20210326.0-x86_64-gp2"
+  default = "al2023-ami-2023*-x86_64"
 }
 
 variable "aws_instance_type" {
-  default = "t2.small"
+  default = "t2.micro"
 }
 
 variable "ami_name" {
-  default = "ami-stack-51"
+  default = "ami-stack-14"
 }
 
 variable "component" {
@@ -17,8 +17,7 @@ variable "component" {
 
 variable "aws_accounts" {
   type = list(string)
-  # default= ["577701061234","560089993749"]
-  default= ["577701061234"]
+  default= ["591136340867"]
 }
 
 variable "ami_regions" {

@@ -1,38 +1,40 @@
-# variable "cidr_vpc" {
-#   description = "CIDR block for the VPC"
-#   default     = "10.1.0.0/16"
-# }
-# variable "cidr_subnet" {
-#   description = "CIDR block for the subnet"
-#   default     = "10.1.0.0/24"
-# }
-
+# General Environment Tag
 variable "environment_tag" {
   description = "Environment tag"
   default     = "Learn"
 }
 
-variable "region"{
-  description = "The region Terraform deploys your instance"
+# AWS Region
+variable "region" {
+  description = "AWS region for deployment"
   default     = "us-east-1"
 }
 
-variable "vpc_id"{
-    default="vpc-0f4f7791ee45bf272"
+# Existing VPC ID (already created manually)
+variable "vpc_id" {
+  description = "Existing VPC ID where instance will be deployed"
+  default     = "vpc-0f4f7791ee45bf272"
 }
 
+# List of existing subnets
 variable "subnets" {
-  type = list(string)
-  default=[
+  description = "List of subnets for EC2 placement"
+  type        = list(string)
+  default = [
     "subnet-06c8b1ff4097e99b9",
     "subnet-03d7aa9975115f22e",
-   ]
+  ]
 }
 
+# SSH Public key used for aws_key_pair resource
 variable "PATH_TO_PUBLIC_KEY" {
-  default = "ses_key.pub"
+  description = "Path to SSH public key for EC2 login"
+  default     = "ses_key.pub"
 }
 
+# (Optional) AMI name input from Jenkins/Packer.
+# Terraform no longer uses this directly, but keeping it avoids breaking modules.
 variable "ami_name" {
-  default = "ami-stack-14"
+  description = "Name of AMI to be built (used by Packer)"
+  default     = "ami-stack-14"
 }

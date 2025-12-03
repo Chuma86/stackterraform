@@ -31,16 +31,14 @@ pipeline {
 
                     echo "Updating AMI name inside image.pkr.hcl to: ${AMI_ID}"
 
-                    # Update AMI name in Packer template
-                    sed -i "s/ami-stack-[0-9]*/${AMI_ID}/" image.pkr.hcl
+                    # CORRECT sed command for your Packer file
+                    sed -i 's/default = "ami-stack-[0-9]*"/default = "'${AMI_ID}'"/' image.pkr.hcl
 
                     echo "Packer logging enabled at: $WORKSPACE/packer.log"
 
-                    # Enable Packer logging
                     export PACKER_LOG=1
                     export PACKER_LOG_PATH=$WORKSPACE/packer.log
 
-                    # Run Packer build
                     packer build -force image.pkr.hcl
                 '''
             }
@@ -125,6 +123,5 @@ pipeline {
 }
 
 def getTerraformPath() {
-    // Terraform installation configured under Jenkins Global Tool Configuration
     return tool(name: 'terraform-14', type: 'terraform')
 }

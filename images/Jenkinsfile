@@ -4,9 +4,9 @@ pipeline {
     environment {
         // Add Terraform tool to PATH
         PATH = "${PATH}:${getTerraformPath()}"
-        
+
         // Dynamic AMI name
-        AMI_ID="ami-stack-${BUILD_NUMBER}"
+        AMI_ID = "ami-stack-${BUILD_NUMBER}"
         VERSION = "1.0.${BUILD_NUMBER}"
     }
 
@@ -19,34 +19,38 @@ pipeline {
         }
 
         stage('Packer AMI Build') {
-    steps {
-        slackSend(
-            color: '#FFFF00',
-            message: "STARTING PACKER IMAGE BUILD: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
-        )
+            steps {
 
-        sh '''
-            cd images
+                slackSend(
+                    color: '#FFFF00',
+                    message: "STARTING PACKER IMAGE BUILD: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+                )
 
-            echo "Updating AMI name inside image.pkr.hcl to: ${AMI_ID}"
+                sh '''
+                    cd images
 
-            sed -i "s/ami-stack-[0-9]*/${AMI_ID}/" image.pkr.hcl
+                    echo "Updating AMI name inside image.pkr.hcl to: ${AMI_ID}"
 
-            echo "Packer logging enabled at: $WORKSPACE/packer.log"
+                    # Update AMI name in Packer template
+                    sed -i "s/ami-stack-[0-9]*/${AMI_ID}/" image.pkr.hcl
 
-            # Enable packer logging
-            export PACKER_LOG=1
-            export PACKER_LOG_PATH=$WORKSPACE/packer.log
+                    echo "Packer logging enabled at: $WORKSPACE/packer.log"
 
-            # Run packer build
-            packer build -force image.pkr.hcl
-        '''
-    }
-}
+                    # Enable Packer logging
+                    export PACKER_LOG=1
+                    export PACKER_LOG_PATH=$WORKSPACE/packer.log
+
+                    # Run Packer build
+                    packer build -force image.pkr.hcl
+                '''
+            }
+        }
 
         stage('Terraform init') {
             steps {
-                slackSend(color: '#FFFF00',
+
+                slackSend(
+                    color: '#FFFF00',
                     message: "STARTING TERRAFORM DEPLOYMENT: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
                 )
 
@@ -68,7 +72,9 @@ pipeline {
 
         stage('Build Instance and Vulnerability Scan') {
             steps {
-                slackSend(color: '#FFFF00',
+
+                slackSend(
+                    color: '#FFFF00',
                     message: "STARTING INFRASTRUCTURE BUILD AND VULNERABILITY SCAN: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
                 )
 
@@ -84,15 +90,36 @@ pipeline {
                 sh '''
                     cd instances
                     aws inspector start-assessment-run \
-                        --assessment-run-name Hardeningrun_'${VERSION}' \
+                        --assessment-run-name Hardeningrun_${VERSION} \
                         --assessment-template-arn "arn:aws:inspector:us-east-1:336528460023:target/0-icADPfPR/template/0-vfjqO1E7" \
                         --region us-east-1
                 '''
 
-                slackSend(color: '#FFFF00',
+                slackSend(
+                    color: '#FFFF00',
                     message: "ENDING DEPLOYMENT: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
                 )
             }
+        }
+    }
+
+    post {
+        success {
+            slackSend(
+                color: '#36A64F',
+                message: "✅ SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' completed successfully! 🎉\n${env.BUILD_URL}"
+            )
+        }
+
+        failure {
+            slackSend(
+                color: '#FF0000',
+                message: "❌ FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' has FAILED! 🔥\n${env.BUILD_URL}"
+            )
+        }
+
+        always {
+            echo "Pipeline execution completed."
         }
     }
 }

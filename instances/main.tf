@@ -6,7 +6,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "3.74.0"
+      version = ">= 5.7.0"
     }
   }
 }
@@ -84,7 +84,7 @@ resource "aws_security_group" "sg_22_80" {
 ########################################
 
 data "aws_ami" "stack" {
-  owners      = ["self"]
+  owners      = ["982455489062"]
   most_recent = true
 
   filter {

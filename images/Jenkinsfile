@@ -28,7 +28,7 @@ pipeline {
                     cd images
 
                     # Update AMI name
-                    sed -i "s/ami-stack-[0-9]*/${AMI_ID}/" image.pkr.hcl
+                    sed -i "s/ami-stack-[0-9]*/ami-${AMI_ID}/" image.pkr.hcl
 
                     # Enable packer logging
                     export PACKER_LOG=1

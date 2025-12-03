@@ -4,6 +4,7 @@ sudo dnf install -y httpd wget php-fpm php-mysqli php-json php php-devel
 sudo dnf install mariadb105-server git -y
 sudo systemctl start httpd
 sudo systemctl enable httpd
+sudo systemctl enable --now mariadb
 sudo systemctl is-enabled httpd
 
 ##Add ec2-user to Apache group and grant permissions to /var/www

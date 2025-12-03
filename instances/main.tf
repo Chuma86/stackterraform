@@ -15,26 +15,17 @@ provider "aws" {
   region = var.region
 }
 
+
 ########################################
-# DEFAULT VPC + DEFAULT SUBNETS
+# VPC + SUBNETS (Explicit IDs)
 ########################################
 
-# Automatically detect the default VPC
-data "aws_vpc" "default" {
-  default = true
+variable "vpc_id" {
+  default = "vpc-09edcedf8bbad9437"
 }
 
-# Automatically detect all default subnets inside the default VPC
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-
-  filter {
-    name   = "default-for-az"
-    values = ["true"]
-  }
+variable "subnet_id" {
+  default = "subnet-0a789c54747685b25"
 }
 
 ########################################
@@ -53,7 +44,7 @@ resource "aws_key_pair" "Stack_KP" {
 resource "aws_security_group" "sg_22_80" {
   name        = "stack-sg"
   description = "Allow SSH, HTTP, Web traffic"
-  vpc_id      = data.aws_vpc.default.id
+  vpc_id      = var.vpc_id
 
   # SSH
   ingress {
@@ -109,7 +100,7 @@ data "aws_ami" "stack" {
 resource "aws_instance" "application_server" {
   ami                         = data.aws_ami.stack.id
   instance_type               = "t2.micro"
-  subnet_id                   = data.aws_subnets.default.ids[0]
+  subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [aws_security_group.sg_22_80.id]
   associate_public_ip_address = true
   key_name                    = aws_key_pair.Stack_KP.key_name

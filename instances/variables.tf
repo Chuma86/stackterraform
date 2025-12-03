@@ -17,7 +17,7 @@ variable "region" {
 ########################################
 variable "PATH_TO_PUBLIC_KEY" {
   description = "Local SSH public key used for EC2 login"
-  default     = "packerkp.pub"
+  default     = "../packerkp.pub"
 }
 
 ########################################

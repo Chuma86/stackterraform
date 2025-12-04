@@ -16,7 +16,7 @@ variable "component" {
 
 variable "aws_accounts" {
   type    = list(string)
-  default = ["591136340867"]
+  default = ["591136340867","646082657258","634888936851","23888480675","646082657258"]
 }
 
 variable "ami_regions" {

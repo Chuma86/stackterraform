@@ -23,7 +23,7 @@ pipeline {
 
                 slackSend(
                     color: '#FFFF00',
-                    message: "STARTING PACKER IMAGE BUILD: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+                    message: "STARTING PACKER IMAGE BUILD: Job '${env.RUNNER} ${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
                 )
 
                 sh '''
@@ -49,7 +49,7 @@ pipeline {
 
                 slackSend(
                     color: '#FFFF00',
-                    message: "STARTING TERRAFORM DEPLOYMENT: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+                    message: "STARTING TERRAFORM DEPLOYMENT: Job '${env.RUNNER} ${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
                 )
 
                 sh '''
@@ -73,7 +73,7 @@ pipeline {
 
                 slackSend(
                     color: '#FFFF00',
-                    message: "STARTING INFRASTRUCTURE BUILD AND VULNERABILITY SCAN: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+                    message: "STARTING INFRASTRUCTURE BUILD AND VULNERABILITY SCAN: Job '${env.RUNNER} ${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
                 )
 
                 sh '''
@@ -87,7 +87,7 @@ pipeline {
             steps {
                 slackSend(
                     color: '#FFFF00',
-                    message: "ENDING DEPLOYMENT: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+                    message: "ENDING DEPLOYMENT: Job '${env.RUNNER} ${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
                 )
             }
         }
@@ -97,7 +97,7 @@ pipeline {
         success {
             slackSend(
                 color: '#36A64F',
-                message: "✅ SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' completed successfully! 🎉\n${env.BUILD_URL}"
+                message: "✅ SUCCESS: Job '${env.RUNNER} ${env.JOB_NAME} [${env.BUILD_NUMBER}]' completed successfully! 🎉\n${env.BUILD_URL}"
             )
         }
 

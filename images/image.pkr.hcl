@@ -61,6 +61,9 @@ source "amazon-ebs" "amazon_ebs" {
   ssh_timeout   = "5m"
   ssh_pty       = true
 
+  # REQUIRED — tells Packer when the build is finished
+  shutdown_command = "sudo shutdown -h now"
+
   launch_block_device_mappings {
     device_name           = "/dev/xvda"
     delete_on_termination = true

@@ -14,9 +14,10 @@ variable "component" {
   default = "clixx"
 }
 
+# All enterprise accounts (DEV, AUT, TEST, PROD, MAN)
 variable "aws_accounts" {
   type    = list(string)
-  default = ["591136340867","646082657258","634888936851","238884806751","646082657258"]
+  default = ["591136340867","646082657258","634888936851","238884806751","982455489062"]
 }
 
 variable "ami_regions" {
@@ -30,49 +31,48 @@ variable "aws_region" {
 
 data "amazon-ami" "source_ami" {
   filters = {
-    name = "${var.aws_source_ami}"
+    name = var.aws_source_ami
   }
   most_recent = true
-  owners      = ["336528460023", "amazon"]
-  region      = "${var.aws_region}"
+  owners      = ["amazon"]
+  region      = var.aws_region
 }
 
-# locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
-
-# source blocks are generated from your builders; a source can be referenced in
-# build blocks. A build block runs provisioners and post-processors on a
-# source.
-
+############################################################
+# SOURCE BLOCK — AMI BUILD (NO DELETION, NO OVERWRITE)
+############################################################
 source "amazon-ebs" "amazon_ebs" {
 
-  # assume_role {
-  #   role_arn     = "arn:aws:iam::560089993749:role/Engineer"
-  # }
+  # REUSE SAME AMI NAME — AWS will automatically create a new AMI ID
+  ami_name  = var.ami_name
 
-  ami_name                = "${var.ami_name}"
-  ami_regions             = "${var.ami_regions}"
-  ami_users               = "${var.aws_accounts}"
-  snapshot_users          = "${var.aws_accounts}"
-  encrypt_boot            = false
-  instance_type           = "${var.aws_instance_type}"
+  # DO NOT delete or deregister older AMIs
+  force_deregister      = false
+  force_delete_snapshot = false
+
+  ami_regions    = var.ami_regions
+  ami_users      = var.aws_accounts
+  snapshot_users = var.aws_accounts
+
+  region        = var.aws_region
+  source_ami    = data.amazon-ami.source_ami.id
+  instance_type = var.aws_instance_type
+  ssh_username  = "ec2-user"
+  ssh_timeout   = "5m"
+  ssh_pty       = true
 
   launch_block_device_mappings {
-    delete_on_termination = true
     device_name           = "/dev/xvda"
-    encrypted             = false
+    delete_on_termination = true
     volume_size           = 10
     volume_type           = "gp2"
+    encrypted             = false
   }
-
-  region        = "${var.aws_region}"
-  source_ami    = "${data.amazon-ami.source_ami.id}"
-  ssh_pty       = true
-  ssh_timeout   = "5m"
-  ssh_username  = "ec2-user"
 }
 
-# a build block invokes sources and runs provisioning steps on them.
-
+############################################################
+# BUILD BLOCK
+############################################################
 build {
   sources = ["source.amazon-ebs.amazon_ebs"]
 

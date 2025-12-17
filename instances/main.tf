@@ -89,7 +89,7 @@ data "aws_ami" "stack" {
 
   filter {
     name   = "name"
-    values = ["ami-stack-*"]
+    values = ["ami-stack-14"]
   }
 }
 

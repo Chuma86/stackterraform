@@ -25,5 +25,5 @@ variable "PATH_TO_PUBLIC_KEY" {
 ########################################
 variable "ami_name" {
   description = "Name of the AMI created by Packer"
-  default     = "ami-stack-*"
+  default     = "ami-stack-14"
 }
